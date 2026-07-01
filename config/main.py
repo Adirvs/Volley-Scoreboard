@@ -14,6 +14,7 @@ def show_scoreboard(time1, time2):
     title()
     print(f"Placar: {time1.nome} {time1.score} x {time2.score} {time2.nome}")
     print(f"Sets: {time1.nome} {time1.set} x {time2.set} {time2.nome}")
+    print(f"Sacando: {time1.nome if time1.is_serving else time2.nome}")
     print(f"\n{'='*40}\n")
 
 
@@ -60,11 +61,15 @@ def main():
             else:
                 system_clear()
                 show_scoreboard(time1, time2)
+                print(result)
                 print("O placar será resetado para o próximo set.")
                 input("Pressione Enter para continuar...")
                 match.reset()
-    input("Pressione Enter para reiniciar o programa.")
-    system_clear()
-    main()
+    user_choice = input("Pressione Enter para reiniciar o programa ou 'q' para sair...").lower()
+    if user_choice == 'q':
+        print("Obrigado por usar o Volleyball Scoreboard!")
+    else:
+        system_clear()
+        main()
 if __name__ == "__main__":
     main()
