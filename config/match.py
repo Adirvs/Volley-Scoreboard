@@ -10,7 +10,12 @@ class Match:
     
     def score_point(self, time):
         time.score_point()
-    
+        time.is_serving = True
+        if time == self.time1:
+            self.time2.is_serving = False
+        else:
+            self.time1.is_serving = False
+
     def check_setwin(self):
         diff = abs(self.time1.score - self.time2.score)
         if self.time1.score >= self.time2.score and self.time1.score >= self.maxpoints and diff >=2:
