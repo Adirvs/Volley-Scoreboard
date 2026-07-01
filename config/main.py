@@ -6,13 +6,19 @@ import os
 def system_clear():
     os.system('cls')
 
+def title():
+    print(f"\n{'✩░▒▓▆▅▃▂▁𝐕𝐨𝐥𝐥𝐞𝐲𝐛𝐚𝐥𝐥 𝐒𝐜𝐨𝐫𝐞𝐛𝐨𝐚𝐫𝐝▁▂▃▅▆▓▒░✩':^40}")
+    print(f"{'='*40}\n")
 
 def show_scoreboard(time1, time2):
-    print(f"\nPlacar: {time1.nome} {time1.score} x {time2.score} {time2.nome}")
+    title()
+    print(f"Placar: {time1.nome} {time1.score} x {time2.score} {time2.nome}")
     print(f"Sets: {time1.nome} {time1.set} x {time2.set} {time2.nome}")
+    print(f"\n{'='*40}\n")
 
 
 def setup():
+    title()
     time1 = Time(input("Digite o nome do Time A: "))
     time2 = Time(input("Digite o nome do Time B: "))
     match = Match(time1, time2, int(input("Digite a quantidade de sets: ")), int(input("Digite a quantidade máxima de pontos por set: ")))
@@ -50,10 +56,15 @@ def main():
                 show_scoreboard(time1, time2)
                 print(match.check_matchwin())
                 break
+
             else:
                 system_clear()
                 show_scoreboard(time1, time2)
                 print("O placar será resetado para o próximo set.")
                 input("Pressione Enter para continuar...")
                 match.reset()
-main()
+    input("Pressione Enter para reiniciar o programa.")
+    system_clear()
+    main()
+if __name__ == "__main__":
+    main()
