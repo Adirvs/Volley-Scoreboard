@@ -12,8 +12,7 @@ def setup_match():
     match = Match(home, away, total_sets, points_per_set)
     return home, away, match
 
-
-def main():
+def play_match():
     show_title()
     home, away, match = setup_match()
 
@@ -49,12 +48,16 @@ def main():
             match.advance_set()
             match.reset_set()
 
-    show_message('Obrigado por usar o placar de voleibol.')
-    restart = input('Deseja jogar novamente? (s/n): ').strip().lower()
-    if restart == 's':
-        main()
+
+def main():
+    wants_to_play = True
+    while wants_to_play:
+        play_match()
+        restart = input('Deseja jogar novamente? (s/n): ').strip().lower()
+        wants_to_play = (restart == 's')
     else:
-        show_message('Até a próxima!')
+        show_message('Obrigado por usar o placar de voleibol. Até a próxima!')
+
 
 if __name__ == '__main__':
     main()
