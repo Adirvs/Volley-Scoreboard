@@ -1,75 +1,55 @@
 from match import Match
-from team import Time
-import os
+from team import Team
+from prompts import prompt_match_settings, prompt_score_action
+from ui import clear_screen, render_scoreboard, show_message, wait_for_continue
 
 
-def system_clear():
-    os.system('cls')
+def setup_match():
+    home_name, away_name, total_sets, points_per_set = prompt_match_settings()
+    home = Team(home_name)
+    away = Team(away_name)
+    home.is_serving = True
+    match = Match(home, away, total_sets, points_per_set)
+    return home, away, match
 
-def title():
-    print(f"\n{'✩░▒▓▆▅▃▂▁𝐕𝐨𝐥𝐥𝐞𝐲𝐛𝐚𝐥𝐥 𝐒𝐜𝐨𝐫𝐞𝐛𝐨𝐚𝐫𝐝▁▂▃▅▆▓▒░✩':^40}")
-    print(f"{'='*40}\n")
-
-def show_scoreboard(time1, time2):
-    title()
-    print(f"Placar: {time1.nome} {time1.score} x {time2.score} {time2.nome}")
-    print(f"Sets: {time1.nome} {time1.set} x {time2.set} {time2.nome}")
-    print(f"Sacando: {time1.nome if time1.is_serving else time2.nome}")
-    print(f"\n{'='*40}\n")
-
-
-def setup():
-    title()
-    time1 = Time(input("Digite o nome do Time A: "))
-    time2 = Time(input("Digite o nome do Time B: "))
-    match = Match(time1, time2, int(input("Digite a quantidade de sets: ")), int(input("Digite a quantidade máxima de pontos por set: ")))
-    return time1, time2, match
-
-
-def get_user_input():
-    while True:
-        user_input = input("Digite o número do time que marcou o ponto (1 ou 2), ou 'x' para sair: ")
-        if user_input in ['1', '2', 'x']:
-            return user_input
-        else:
-            print("Entrada inválida. Por favor, digite 1, 2 ou x.")
-            
 
 def main():
-    time1, time2, match = setup()
+    home, away, match = setup_match()
+
     while True:
-        system_clear()
-        show_scoreboard(time1, time2)
-        user_input = get_user_input()
+        clear_screen()
+        render_scoreboard(home, away, match)
+        action = prompt_score_action()
 
-        if user_input == 'x':
+        if action == 'x':
             break
-        elif user_input == '1':
-            match.score_point(time1)
-        elif user_input == '2':
-            match.score_point(time2)
+        if action == 'r':
+            match.reset_set()
+            show_message('Set reiniciado.')
+            wait_for_continue()
+            continue
 
-        result = match.check_setwin()
+        scorer = home if action == '1' else away
+        match.score_point(scorer)
+        set_winner = match.complete_set()
 
-        if "Vitória" in result:
-            if "Vitória" in match.check_matchwin():
-                system_clear()
-                show_scoreboard(time1, time2)
-                print(match.check_matchwin())
+        if set_winner:
+            show_message(f'Vitória! O time {set_winner.name} venceu o set.')
+            match_winner = match.match_winner()
+
+            if match_winner:
+                clear_screen()
+                render_scoreboard(home, away, match)
+                show_message(f'Vitória! O time {match_winner.name} venceu a partida!')
                 break
 
-            else:
-                system_clear()
-                show_scoreboard(time1, time2)
-                print(result)
-                print("O placar será resetado para o próximo set.")
-                input("Pressione Enter para continuar...")
-                match.reset()
-    user_choice = input("Pressione Enter para reiniciar o programa ou 'q' para sair...").lower()
-    if user_choice == 'q':
-        print("Obrigado por usar o Volleyball Scoreboard!")
-    else:
-        system_clear()
-        main()
-if __name__ == "__main__":
+            show_message('O placar será resetado para o próximo set.')
+            wait_for_continue()
+            match.advance_set()
+            match.reset_set()
+
+    show_message('Obrigado por usar o placar de voleibol.')
+
+
+if __name__ == '__main__':
     main()
