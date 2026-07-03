@@ -1,7 +1,7 @@
 from match import Match
 from team import Team
 from prompts import prompt_match_settings, prompt_score_action
-from ui import clear_screen, render_scoreboard, show_message, wait_for_continue
+from ui import clear_screen, render_scoreboard, show_message, wait_for_continue, show_title
 
 
 def setup_match():
@@ -14,6 +14,7 @@ def setup_match():
 
 
 def main():
+    show_title()
     home, away, match = setup_match()
 
     while True:
@@ -49,7 +50,11 @@ def main():
             match.reset_set()
 
     show_message('Obrigado por usar o placar de voleibol.')
-
+    restart = input('Deseja jogar novamente? (s/n): ').strip().lower()
+    if restart == 's':
+        main()
+    else:
+        show_message('Até a próxima!')
 
 if __name__ == '__main__':
     main()
