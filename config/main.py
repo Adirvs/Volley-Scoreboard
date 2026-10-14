@@ -13,6 +13,7 @@ def setup_match():
     return home, away, match
 
 def play_match():
+    clear_screen()
     show_title()
     home, away, match = setup_match()
 
