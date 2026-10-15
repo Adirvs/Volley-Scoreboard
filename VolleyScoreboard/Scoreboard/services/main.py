@@ -1,5 +1,5 @@
-from match import Match
-from team import Team
+from classes.match import Match
+from classes.team import Team
 from prompts import prompt_match_settings, prompt_score_action
 from ui import clear_screen, render_scoreboard, show_message, wait_for_continue, show_title
 

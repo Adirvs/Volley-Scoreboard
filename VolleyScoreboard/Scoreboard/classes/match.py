@@ -23,9 +23,10 @@ class Match:
     def set_winner(self):
         if self.home.points >= self.points_per_set and self.home.points > self.away.points and self._point_difference() >= 2:
             return self.home
-        if self.away.points >= self.points_per_set and self.away.points > self.home.points and self._point_difference() >= 2:
+        elif self.away.points >= self.points_per_set and self.away.points > self.home.points and self._point_difference() >= 2:
             return self.away
-        return None
+        else:
+            return None
 
     def complete_set(self):
         winner = self.set_winner()
