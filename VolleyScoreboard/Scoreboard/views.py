@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from forms import MatchSettingsForm
+from .forms import MatchSettingsForm
 
 def home(request):
     return render(request, 'home.html')
