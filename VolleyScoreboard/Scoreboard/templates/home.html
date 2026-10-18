@@ -8,5 +8,9 @@
 <body>
     <h1>Volleyball Scoreboard</h1>
     <p>Welcome to the Volleyball Scoreboard!</p>
+    <form method="post" action="{% url 'setup' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-large">Setup Match</button>
+    </form>
 </body>
 </html>

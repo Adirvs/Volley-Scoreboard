@@ -1,15 +1,16 @@
-from classes.match import Match
-from classes.team import Team
-from prompts import prompt_match_settings, prompt_score_action
+from domain.match import Match
+from domain.team import Team
+from forms import MatchSettingsForm
 from ui import clear_screen, render_scoreboard, show_message, wait_for_continue, show_title
 
 
 def setup_match():
-    home_name, away_name, total_sets, points_per_set = prompt_match_settings()
+    form = MatchSettingsForm()
+    home_name, away_name, best_of, points_per_set = form.get_settings()
     home = Team(home_name)
     away = Team(away_name)
     home.is_serving = True
-    match = Match(home, away, total_sets, points_per_set)
+    match = Match(home, away, best_of, points_per_set)
     return home, away, match
 
 def play_match():

@@ -2,10 +2,10 @@ from team import Team
 
 class Match:
 
-    def __init__(self, home: Team, away: Team, total_sets: int, points_per_set: int):
+    def __init__(self, home: Team, away: Team, best_of: int, points_per_set: int):
         self.home = home
         self.away = away
-        self.total_sets = total_sets
+        self.best_of = best_of
         self.points_per_set = points_per_set
         self.current_set = 1
 
@@ -42,13 +42,10 @@ class Match:
         if self.current_set < self.total_sets:
             self.current_set += 1
 
-    def needed_sets_to_win(self) -> int:
-        return self.total_sets // 2 + 1
-
     def match_winner(self):
-        if self.home.sets_won >= self.needed_sets_to_win():
+        if self.home.sets_won >= self.best_of:
             return self.home
-        if self.away.sets_won >= self.needed_sets_to_win():
+        if self.away.sets_won >= self.best_of:
             return self.away
         return None
 
