@@ -1,18 +1,23 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import MatchSettingsForm
 
 def home(request):
     return render(request, 'home.html')
 
 def setup(request):
+    # Render the setup page with the match settings form
     if request.method == 'POST':
-        form = MatchSettingsForm(request.POST)
+        form = MatchSettingsForm(request.POST) 
         if form.is_valid():
             form = MatchSettingsForm(request.POST)
-            return render(request, 'setup.html', {'form': form})
+            redirect_url = 'create_match'  # URL to redirect after form submission
+            return redirect(redirect_url)
+    else:
+        form = MatchSettingsForm()
+    return render(request, 'setup.html', {'form': form})
 
-def create_match(request):
-    if request.method == 'POST':
+def create_match(request): 
+    if request.method == 'GET':
         # Aqui você pode processar os dados do formulário e criar a partida
         # Por enquanto, apenas renderizamos a página do placar
         return render(request, 'match.html')

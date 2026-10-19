@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+{% extends 'base.html' %}
+{% block title %}Home - Volleyball Scoreboard{% endblock %}
+{% block content %}
 <body>
-    <h1>Volleyball Scoreboard</h1>
     <p>Welcome to the Volleyball Scoreboard!</p>
     <form method="post" action="{% url 'setup' %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-large">Setup Match</button>
     </form>
 </body>
+{% endblock %}
 </html>
