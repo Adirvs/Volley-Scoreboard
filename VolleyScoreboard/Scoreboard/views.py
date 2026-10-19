@@ -8,12 +8,8 @@ def setup(request):
     if request.method == 'POST':
         form = MatchSettingsForm(request.POST)
         if form.is_valid():
-            # Process the form data and create the match
-            pass
-    else:
-        form = MatchSettingsForm()
-
-    return render(request, 'setup.html', {'form': form})
+            form = MatchSettingsForm(request.POST)
+            return render(request, 'setup.html', {'form': form})
 
 def create_match(request):
     if request.method == 'POST':
