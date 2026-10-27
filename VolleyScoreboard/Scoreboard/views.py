@@ -3,8 +3,8 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_POST
 
 from .domain.match import Match
-from .domain.team import Team
 from .forms import MatchSettingsForm
+from .services.main import create_match
 
 MATCH_SESSION_KEY = "scoreboard_match"
 
@@ -35,10 +35,12 @@ def setup(request):
         form = MatchSettingsForm(request.POST)
         if form.is_valid():
             values = form.cleaned_data
-            home = Team(values["home_name"])
-            away = Team(values["away_name"])
-            home.is_serving = True
-            match = Match(home, away, values["sets_to_win"], values["points_per_set"])
+            match = create_match(
+                values["home_name"],
+                values["away_name"],
+                values["sets_to_win"],
+                values["points_per_set"],
+            )
             _save_match(request, match)
             return redirect("scoreboard")  # POST/Redirect/GET
     else:
