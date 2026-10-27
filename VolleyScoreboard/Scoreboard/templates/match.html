@@ -1,10 +1,55 @@
-{% extends 'base.html' %}
-{% block title %}Match - Volleyball Scoreboard{% endblock %}
+{% extends "base.html" %}
+{% block title %}Placar | Placar de Vôlei{% endblock %}
 {% block content %}
-    <h1>Partida Criada!</h1>
-    <ul>
-        <li>Time 1: {{ team1 }}</li>
-        <li>Time 2: {{ team2 }}</li>
-    </ul>
+    <h2>Set {{ match.current_set }}</h2>
+    <p>Primeiro time a vencer {{ match.sets_to_win }} set(s). Cada set vai a {{ match.points_per_set }} pontos, com dois de diferença.</p>
+
+    <section aria-label="Placar">
+        <article>
+            <h3>{{ match.home.name }}{% if match.home.is_serving %} — saque{% endif %}</h3>
+            <p><strong>{{ match.home.points }}</strong> ponto(s) · {{ match.home.sets_won }} set(s)</p>
+            {% if not match.set_finished and not match.match_is_over %}
+                <form method="post" action="{% url 'match_score' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="team" value="home">
+                    <button type="submit">Ponto para {{ match.home.name }}</button>
+                </form>
+            {% endif %}
+        </article>
+        <article>
+            <h3>{{ match.away.name }}{% if match.away.is_serving %} — saque{% endif %}</h3>
+            <p><strong>{{ match.away.points }}</strong> ponto(s) · {{ match.away.sets_won }} set(s)</p>
+            {% if not match.set_finished and not match.match_is_over %}
+                <form method="post" action="{% url 'match_score' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="team" value="away">
+                    <button type="submit">Ponto para {{ match.away.name }}</button>
+                </form>
+            {% endif %}
+        </article>
+    </section>
+
+    {% if match.match_is_over %}
+        <h2>{{ match.match_winner.name }} venceu a partida!</h2>
+    {% elif match.set_finished %}
+        <h2>{{ match.set_winner.name }} venceu o set.</h2>
+        <form method="post" action="{% url 'next_set' %}">
+            {% csrf_token %}
+            <button type="submit">Iniciar próximo set</button>
+        </form>
+    {% else %}
+        <form method="post" action="{% url 'undo_score' %}">
+            {% csrf_token %}
+            <button type="submit">Desfazer último ponto</button>
+        </form>
+        <form method="post" action="{% url 'reset_set' %}">
+            {% csrf_token %}
+            <button type="submit">Reiniciar set atual</button>
+        </form>
+    {% endif %}
+
+    <form method="post" action="{% url 'end_match' %}">
+        {% csrf_token %}
+        <button type="submit">Encerrar partida</button>
+    </form>
 {% endblock %}
-</html>
