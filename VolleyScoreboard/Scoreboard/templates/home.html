@@ -1,12 +1,6 @@
-{% extends 'base.html' %}
-{% block title %}Home - Volleyball Scoreboard{% endblock %}
+{% extends "base.html" %}
+{% block title %}Início | Placar de Vôlei{% endblock %}
 {% block content %}
-<body>
-    <p>Welcome to the Volleyball Scoreboard!</p>
-    <form method="post" action="{% url 'setup' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-large">Setup Match</button>
-    </form>
-</body>
+    <p>Crie uma partida para começar a marcar os pontos.</p>
+    <p><a href="{% url 'setup' %}">Configurar nova partida</a></p>
 {% endblock %}
-</html>
