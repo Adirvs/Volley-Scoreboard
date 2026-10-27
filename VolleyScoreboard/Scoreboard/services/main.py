@@ -1,65 +1,11 @@
-from domain.match import Match
-from domain.team import Team
-from forms import MatchSettingsForm
-from ui import clear_screen, render_scoreboard, show_message, wait_for_continue, show_title
+"""Serviços de aplicação usados pelas views do placar."""
+
+from ..domain.match import Match
+from ..domain.team import Team
 
 
-def setup_match():
-    form = MatchSettingsForm()
-    home_name, away_name, best_of, points_per_set = form.get_settings()
+def create_match(home_name: str, away_name: str, sets_to_win: int, points_per_set: int) -> Match:
     home = Team(home_name)
     away = Team(away_name)
     home.is_serving = True
-    match = Match(home, away, best_of, points_per_set)
-    return home, away, match
-
-def play_match():
-    clear_screen()
-    show_title()
-    home, away, match = setup_match()
-
-    while True:
-        clear_screen()
-        render_scoreboard(home, away, match)
-        action = prompt_score_action()
-
-        if action == 'x':
-            break
-        if action == 'r':
-            match.reset_set()
-            show_message('Set reiniciado.')
-            wait_for_continue()
-            continue
-
-        scorer = home if action == '1' else away
-        match.score_point(scorer)
-        set_winner = match.complete_set()
-
-        if set_winner:
-            show_message(f'Vitória! O time {set_winner.name} venceu o set.')
-            match_winner = match.match_winner()
-
-            if match_winner:
-                clear_screen()
-                render_scoreboard(home, away, match)
-                show_message(f'Vitória! O time {match_winner.name} venceu a partida!')
-                break
-
-            show_message('O placar será resetado para o próximo set.')
-            wait_for_continue()
-            match.advance_set()
-            match.reset_set()
-
-
-def main():
-    wants_to_play = True
-    while wants_to_play:
-        play_match()
-        restart = input('Deseja jogar novamente? (s/n): ').strip().lower()
-        wants_to_play = (restart == 's')
-    else:
-        show_message('Obrigado por usar o placar de voleibol. Até a próxima!')
-
-
-if __name__ == '__main__':
-    main()
+    return Match(home, away, sets_to_win, points_per_set)
