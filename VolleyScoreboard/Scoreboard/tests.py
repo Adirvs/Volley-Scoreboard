@@ -54,16 +54,64 @@ class MatchViewsTests(TestCase):
         self.create_match()
         for _ in range(2):
             response = self.client.post(reverse("match_score"), {"team": "home"})
-            self.assertRedirects(response, reverse("scoreboard"))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["status"], "success")
 
         response = self.client.get(reverse("scoreboard"))
         self.assertContains(response, "Azul venceu o set")
         self.assertEqual(self.client.session["scoreboard_match"]["home"]["sets_won"], 1)
 
-        self.client.post(reverse("next_set"))
+        response = self.client.post(reverse("next_set"))
+        self.assertEqual(response.json()["current_set"], 2)
         session_match = self.client.session["scoreboard_match"]
         self.assertEqual(session_match["current_set"], 2)
         self.assertEqual(session_match["home"]["points"], 0)
+
+    def test_async_actions_return_match_state_as_json(self):
+        self.create_match()
+
+        response = self.client.post(reverse("point_a"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["score_a"], 1)
+        self.assertEqual(response.json()["changed_team"], "A")
+
+        response = self.client.post(reverse("undo_b"))
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["status"], "error")
+        self.assertEqual(
+            self.client.session["scoreboard_match"]["home"]["points"],
+            1,
+        )
+
+        response = self.client.post(reverse("undo_a"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["score_a"], 0)
+        self.assertEqual(response.json()["can_undo_a"], False)
+
+        response = self.client.post(reverse("reset_set"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["score_a"], 0)
+
+        response = self.client.post(reverse("next_set"))
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["status"], "error")
+
+    def test_team_undo_can_remove_an_older_point_from_that_team(self):
+        self.create_match(points_per_set=25)
+        self.client.post(reverse("point_a"))
+        self.client.post(reverse("point_b"))
+
+        response = self.client.post(reverse("undo_a"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["score_a"], 0)
+        self.assertEqual(response.json()["score_b"], 1)
+        self.assertEqual(response.json()["current_server"], "B")
+        self.assertEqual(response.json()["changed_team"], "A")
+        self.assertEqual(
+            self.client.session["scoreboard_match"]["point_history"],
+            ["away"],
+        )
 
     def test_mutating_url_rejects_get_and_template_includes_csrf(self):
         self.assertEqual(self.client.get(reverse("match_score")).status_code, 405)
@@ -77,4 +125,17 @@ class MatchViewsTests(TestCase):
                 "sets_to_win": 2, "points_per_set": 25,
             }).status_code,
             403,
+        )
+        csrf_client.get(reverse("setup"))
+        csrf_token = csrf_client.cookies["csrftoken"].value
+        setup_response = csrf_client.post(reverse("setup"), {
+            "home_name": "Azul", "away_name": "Verde",
+            "sets_to_win": 2, "points_per_set": 25,
+        }, HTTP_X_CSRFTOKEN=csrf_token)
+        self.assertEqual(setup_response.status_code, 302)
+
+        csrf_client.get(reverse("scoreboard"))
+        self.assertEqual(
+            csrf_client.post(reverse("point_a"), HTTP_X_CSRFTOKEN=csrf_token).status_code,
+            200,
         )

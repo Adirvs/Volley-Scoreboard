@@ -1,55 +1,73 @@
-{% extends "base.html" %}
-{% block title %}Placar | Placar de Vôlei{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ match.home.name }} vs {{ match.away.name }} - Placar{% endblock %}
+
 {% block content %}
-    <h2>Set {{ match.current_set }}</h2>
-    <p>Primeiro time a vencer {{ match.sets_to_win }} set(s). Cada set vai a {{ match.points_per_set }} pontos, com dois de diferença.</p>
+<div class="scoreboard-wrapper"
+     data-point-a-url="{% url 'point_a' %}"
+     data-point-b-url="{% url 'point_b' %}"
+     data-undo-a-url="{% url 'undo_a' %}"
+     data-undo-b-url="{% url 'undo_b' %}"
+     data-reset-url="{% url 'reset_set' %}"
+     data-next-set-url="{% url 'next_set' %}"
+     data-setup-url="{% url 'setup' %}">
+  <div class="set-history">
+    <div class="set-chip active" id="current-set">Set Atual (Set {{ match.current_set }})</div>
+  </div>
 
-    <section aria-label="Placar">
-        <article>
-            <h3>{{ match.home.name }}{% if match.home.is_serving %} — saque{% endif %}</h3>
-            <p><strong>{{ match.home.points }}</strong> ponto(s) · {{ match.home.sets_won }} set(s)</p>
-            {% if not match.set_finished and not match.match_is_over %}
-                <form method="post" action="{% url 'match_score' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="team" value="home">
-                    <button type="submit">Ponto para {{ match.home.name }}</button>
-                </form>
-            {% endif %}
-        </article>
-        <article>
-            <h3>{{ match.away.name }}{% if match.away.is_serving %} — saque{% endif %}</h3>
-            <p><strong>{{ match.away.points }}</strong> ponto(s) · {{ match.away.sets_won }} set(s)</p>
-            {% if not match.set_finished and not match.match_is_over %}
-                <form method="post" action="{% url 'match_score' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="team" value="away">
-                    <button type="submit">Ponto para {{ match.away.name }}</button>
-                </form>
-            {% endif %}
-        </article>
-    </section>
-
+  <p id="match-status" role="status">
     {% if match.match_is_over %}
-        <h2>{{ match.match_winner.name }} venceu a partida!</h2>
+      {% if match.match_winner == match.home %}{{ match.home.name }}{% else %}{{ match.away.name }}{% endif %} venceu a partida.
     {% elif match.set_finished %}
-        <h2>{{ match.set_winner.name }} venceu o set.</h2>
-        <form method="post" action="{% url 'next_set' %}">
-            {% csrf_token %}
-            <button type="submit">Iniciar próximo set</button>
-        </form>
+      {% if match.set_winner_name == "home" %}{{ match.home.name }}{% else %}{{ match.away.name }}{% endif %} venceu o set.
     {% else %}
-        <form method="post" action="{% url 'undo_score' %}">
-            {% csrf_token %}
-            <button type="submit">Desfazer último ponto</button>
-        </form>
-        <form method="post" action="{% url 'reset_set' %}">
-            {% csrf_token %}
-            <button type="submit">Reiniciar set atual</button>
-        </form>
+      Set {{ match.current_set }} em andamento.
     {% endif %}
+  </p>
+  <p id="action-error" role="alert" hidden></p>
 
-    <form method="post" action="{% url 'end_match' %}">
-        {% csrf_token %}
-        <button type="submit">Encerrar partida</button>
-    </form>
+  <div class="scoreboard-grid">
+    <div class="team-card home">
+      <span class="serve-badge {% if match.home.is_serving %}active{% endif %}" id="serve-a">⚡ SAQUE</span>
+      <h2 class="team-name">{{ match.home.name }}</h2>
+      <div class="score-display" id="score-a">{{ match.home.points }}</div>
+
+      <div class="score-actions">
+        <button class="btn btn-score-add" id="btn-add-a" type="button" {% if match.set_finished or match.match_is_over %}disabled{% endif %}>+1</button>
+        <button class="btn btn-score-sub" id="btn-sub-a" type="button" {% if not match.home.points or match.set_finished or match.match_is_over %}disabled{% endif %}>-1</button>
+      </div>
+    </div>
+
+    <div class="center-info">
+      <div class="sets-score">
+        <span id="sets-a">{{ match.home.sets_won }}</span> : <span id="sets-b">{{ match.away.sets_won }}</span>
+      </div>
+      <button class="btn" id="btn-reset" type="button" {% if match.set_finished or match.match_is_over %}disabled{% endif %} style="background: var(--bg-card); color: var(--text-muted); font-size: 0.8rem;">
+        Reiniciar Set
+      </button>
+      <button class="btn" id="btn-next-set" type="button" {% if not match.set_finished or match.match_is_over %}hidden{% endif %} style="background: var(--bg-card); color: var(--text-muted); font-size: 0.8rem;">
+        Próximo Set
+      </button>
+      <a href="{% url 'setup' %}" class="btn" style="background: var(--bg-card); color: var(--text-muted); font-size: 0.8rem;">
+        Nova Partida
+      </a>
+    </div>
+
+    <div class="team-card away">
+      <span class="serve-badge {% if match.away.is_serving %}active{% endif %}" id="serve-b">⚡ SAQUE</span>
+      <h2 class="team-name">{{ match.away.name }}</h2>
+      <div class="score-display" id="score-b">{{ match.away.points }}</div>
+
+      <div class="score-actions">
+        <button class="btn btn-score-add" id="btn-add-b" type="button" {% if match.set_finished or match.match_is_over %}disabled{% endif %}>+1</button>
+        <button class="btn btn-score-sub" id="btn-sub-b" type="button" {% if not match.away.points or match.set_finished or match.match_is_over %}disabled{% endif %}>-1</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/scoreboard.js' %}"></script>
 {% endblock %}

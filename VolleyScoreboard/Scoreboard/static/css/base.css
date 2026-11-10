@@ -1,0 +1,284 @@
+:root {
+  /* Paleta Dark Court */
+  --bg-main: #0F172A;        /* Slate 900 */
+  --bg-card: #1E293B;        /* Slate 800 */
+  --bg-card-hover: #334155;  /* Slate 700 */
+  
+  --team-home: #06B6D4;       /* Ciano Elétrico */
+  --team-away: #F97316;       /* Laranja Sunset */
+  
+  --accent-gold: #FACC15;     /* Amarelo Saque/Set Point */
+  --text-main: #F8FAFC;       /* Off-white */
+  --text-muted: #94A3B8;      /* Slate 400 */
+  --border-color: #334155;
+  
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-digits: 'Chakra Petch', 'Outfit', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* Base Form & Setup Styles */
+.setup-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.form-control {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--team-home);
+}
+
+/* Botões Globais */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--team-home);
+  color: #000;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+}
+
+/* Grid & Placar Match Screen */
+.scoreboard-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Histórico de Sets Topo */
+.set-history {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.set-chip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.set-chip.active {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  font-weight: bold;
+}
+
+/* Placar Principal */
+.scoreboard-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .scoreboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.team-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.team-card.home { border-color: rgba(6, 182, 212, 0.4); }
+.team-card.away { border-color: rgba(249, 115, 22, 0.4); }
+
+.team-name {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.team-card.home .team-name { color: var(--team-home); }
+.team-card.away .team-name { color: var(--team-away); }
+
+/* Indicador de Saque */
+.serve-badge {
+  font-size: 0.75rem;
+  background: var(--accent-gold);
+  color: #000;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.serve-badge.active {
+  opacity: 1;
+}
+
+/* Pontuação Principal */
+.score-display {
+  font-family: var(--font-digits);
+  font-size: 6rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 1rem 0;
+  user-select: none;
+}
+
+/* Controles de Pontuação */
+.score-actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-score-add {
+  flex: 2;
+  padding: 1.25rem;
+  font-size: 1.5rem;
+}
+
+.team-card.home .btn-score-add { background: var(--team-home); color: #000; }
+.team-card.away .btn-score-add { background: var(--team-away); color: #fff; }
+
+.btn-score-sub {
+  flex: 1;
+  background: var(--bg-main);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.btn-score-sub:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+}
+
+/* Centro (Sets e VS) */
+.center-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sets-score {
+  font-family: var(--font-digits);
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--bg-card);
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+/* Animação para atualização de pontos */
+.score-pop {
+  animation: popScale 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popScale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+    color: var(--accent-gold);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

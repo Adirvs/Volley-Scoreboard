@@ -1,10 +1,41 @@
-{% extends "base.html" %}
-{% block title %}Nova partida | Placar de Vôlei{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}Nova Partida - Volley Scoreboard{% endblock %}
+
 {% block content %}
-    <h2>Configurar partida</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Iniciar partida</button>
-    </form>
+<div class="setup-container">
+  <h2 style="margin-bottom: 1.5rem; text-align: center;">Configurar Partida</h2>
+  
+  <form method="post" action="{% url 'setup' %}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    
+    <div class="form-group">
+      <label for="id_home_name">Time 1 (Casa)</label>
+      <input type="text" name="home_name" id="id_home_name" class="form-control" placeholder="Ex: Brasil" value="{{ form.home_name.value|default:'' }}" maxlength="100" required>
+      {{ form.home_name.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_away_name">Time 2 (Visitante)</label>
+      <input type="text" name="away_name" id="id_away_name" class="form-control" placeholder="Ex: Itália" value="{{ form.away_name.value|default:'' }}" maxlength="100" required>
+      {{ form.away_name.errors }}
+    </div>
+
+    <div class="form-group">
+      <label for="id_sets_to_win">Formato da Partida</label>
+      <select name="sets_to_win" id="id_sets_to_win" class="form-control">
+        <option value="2" {% if form.sets_to_win.value == "2" or form.sets_to_win.value == 2 %}selected{% endif %}>Melhor de 3 Sets</option>
+        <option value="3" {% if form.sets_to_win.value == "3" or form.sets_to_win.value == 3 or not form.sets_to_win.value %}selected{% endif %}>Melhor de 5 Sets</option>
+      </select>
+      {{ form.sets_to_win.errors }}
+    </div>
+
+    <input type="hidden" name="points_per_set" value="{{ form.points_per_set.value|default:25 }}">
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+      Iniciar Partida
+    </button>
+  </form>
+</div>
 {% endblock %}

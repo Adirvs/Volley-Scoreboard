@@ -37,11 +37,25 @@ class Match:
         if self.set_finished or not self.point_history:
             return False
 
-        side = self.point_history.pop()
+        side = self.point_history[-1]
         team = self.home if side == "home" else self.away
+        return self.undo_point(team)
+
+    def undo_point(self, team: Team) -> bool:
+        if self.set_finished or self.match_is_over() or team not in (self.home, self.away):
+            return False
+
+        side = "home" if team is self.home else "away"
+        if team.points == 0 or side not in self.point_history:
+            return False
+
+        point_index = len(self.point_history) - 1 - self.point_history[::-1].index(side)
+        del self.point_history[point_index]
         team.remove_point()
-        self._set_server(self.home if not self.point_history else
-                         (self.home if self.point_history[-1] == "home" else self.away))
+
+        if point_index == len(self.point_history):
+            last_point = self.point_history[-1] if self.point_history else "home"
+            self._set_server(self.home if last_point == "home" else self.away)
         return True
 
     def _set_server(self, team: Team) -> None:
