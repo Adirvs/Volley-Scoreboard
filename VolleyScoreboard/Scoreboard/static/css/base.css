@@ -83,6 +83,22 @@ body.home-page main::before {
   transform: translate(-50%, -50%) rotate(-12deg);
 }
 
+header > a,
+header > a:visited {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.18s ease;
+}
+
+header > a:hover,
+header > a:focus-visible {
+  transform: scale(1.03);
+}
+
+header > a:active {
+  transform: scale(1.05);
+}
 /* Homepage */
 .home-hero {
   position: relative;
