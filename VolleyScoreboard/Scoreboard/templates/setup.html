@@ -25,13 +25,18 @@
     <div class="form-group">
       <label for="id_sets_to_win">Formato da Partida</label>
       <select name="sets_to_win" id="id_sets_to_win" class="form-control">
+        <option value="1" {% if form.sets_to_win.value == "1" or form.sets_to_win.value == 1 %}selected{% endif %}>Melhor de 1 Set</option>
         <option value="2" {% if form.sets_to_win.value == "2" or form.sets_to_win.value == 2 %}selected{% endif %}>Melhor de 3 Sets</option>
         <option value="3" {% if form.sets_to_win.value == "3" or form.sets_to_win.value == 3 or not form.sets_to_win.value %}selected{% endif %}>Melhor de 5 Sets</option>
       </select>
       {{ form.sets_to_win.errors }}
     </div>
 
-    <input type="hidden" name="points_per_set" value="{{ form.points_per_set.value|default:25 }}">
+    <div class="form-group">
+      <label for="id_points_per_set">Pontos por Set</label>
+      <input type="number" name="points_per_set" id="id_points_per_set" class="form-control" value="{{form.points_per_set.value|default:25}}" min="1" max="50" required>
+      {{ form.points_per_set.errors }}
+    </div>
 
     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
       Iniciar Partida
