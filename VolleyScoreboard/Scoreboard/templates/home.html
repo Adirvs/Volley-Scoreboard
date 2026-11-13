@@ -1,6 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Início | Placar de Vôlei{% endblock %}
+{% block body_class %}home-page{% endblock %}
 {% block content %}
-    <p>Crie uma partida para começar a marcar os pontos.</p>
-    <p><a href="{% url 'setup' %}">Configurar nova partida</a></p>
+<section class="home-hero" aria-labelledby="home-title">
+  <div class="home-copy">
+    <p class="home-eyebrow"><span aria-hidden="true">●</span> A emoção começa aqui</p>
+    <h2 id="home-title">Cada ponto<br>conta.</h2>
+    <p class="home-description">
+      Prepare a quadra, reúna os times e acompanhe cada set em tempo real.
+      Seu próximo jogo merece um placar à altura.
+    </p>
+    <a class="btn btn-primary home-cta" href="{% url 'setup' %}">
+      Configurar nova partida <span aria-hidden="true">→</span>
+    </a>
+    <div class="home-highlights" aria-label="Recursos">
+      <span><strong>01</strong> Configure os times</span>
+      <span><strong>02</strong> Marque cada ponto</span>
+      <span><strong>03</strong> Viva o jogo</span>
+    </div>
+  </div>
+
+  <div class="home-court" aria-hidden="true">
+    <div class="court-lines">
+      <span class="court-net"></span>
+      <span class="court-circle"></span>
+      <span class="court-ball">🏐</span>
+    </div>
+    <p>JOGO<br><strong>ON</strong></p>
+  </div>
+</section>
 {% endblock %}
